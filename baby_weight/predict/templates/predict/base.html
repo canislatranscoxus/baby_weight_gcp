@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title> baby weight prediction</title>
+
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+  </head>
+  <body>
+
+
+    <div id="header">
+
+      <div class="row">
+        <a href="/" >
+        <div class="column">
+          <img class="one"  src="{% static "predict/img/grass.jpg" %}"> </img>
+        </div>
+        </a>
+      </div>
+    </div>
+
+
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+
+  </body>
+</html>
