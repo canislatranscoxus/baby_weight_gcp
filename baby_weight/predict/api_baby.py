@@ -12,39 +12,57 @@ references:
 https://github.com/GoogleCloudPlatform/training-data-analyst/blob/master/courses/machine_learning/deepdive/06_structured/3_keras_dnn.ipynb
 
 '''
+
+
 from baby_weight import settings
 from os import path
 import os
 #import tensorflow as tf
 #from tensorflow.keras.models import load_model
 
+import googleapiclient
 from googleapiclient        import discovery
 from oauth2client.client    import GoogleCredentials
-from google.appengine.api   import app_identity
+#from google.appengine.api   import app_identity
+
+
+from google.api_core.client_options import ClientOptions
 
 
 credentials   = GoogleCredentials.get_application_default()
 api           = discovery.build("ml", "v1", credentials=credentials)
-project       = app_identity.get_application_id()
+project       = 'my_project_here'
+region        = 'us-east1'
 model_name    = 'babyweight'
 model_version = 'dec_30'
 
-
+# Create the ML Engine service object.
+# To authenticate set the environment variable
+# GOOGLE_APPLICATION_CREDENTIALS=<path_to_service_account_file>
+prefix = "{}-ml".format(region) if region else "ml"
+api_endpoint = "https://{}.googleapis.com".format(prefix)
+client_options = ClientOptions(api_endpoint=api_endpoint)
+service = googleapiclient.discovery.build( 'ml', 'v1', client_options=client_options)
+name = 'projects/{}/models/{}'.format(project, model_name)
 
 #model_h5_path = path.join(settings.STATICFILES_DIRS[0], 'predict', 'baby.h5')
 #model_h5_path = 'gs://aat-ai-models/babyweight/20201229152705'
 #h5_model      = load_model( model_h5_path )
 
-def get_weight_old( j_input ):
+def get_weight( j_input ):
     try:
         tf_dic        = {name: [value] for name, value in j_input.items()}
 
-        parent        = "projects/{0}/models/{1}/versions/{2}".format(
-            project, model_name, model_version)
+        #parent        = "projects/{0}/models/{1}/versions/{2}".format(project, model_name, model_version)
+        #predictions   = api.projects().predict( body = tf_dic, name=parent ).execute()
 
-        predictions   = api.projects().predict( body = tf_dic, name=parent ).execute()
+        response = service.projects().predict(
+            name=name,
+            #body={'instances': instances}
+            body= tf_dic
+        ).execute()
 
-        weight_pounds = predictions[0][0]
+        weight_pounds = response[0][0]
         weight_kilos  = weight_pounds * 0.45359237
 
         result        = {
