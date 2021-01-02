@@ -5,12 +5,12 @@ from django.core    import validators
 class PredictForm( forms.Form ):
 
     IS_MALE         = [ ( 'False', 'girl'  ), ( 'True', 'boy' ), ( 'Unknown', 'unknown' )  ]
-    PLURALITY       = [ ( '1', 'Single(1)' )
-            , ( '2', 'Twins(2)'       )
-            , ( '3', 'Triplets(3)'    )
-            , ( '4', 'Quadruplets(4)' )
-            , ( '5', 'Quintuplets(5)' )
-            , ( '2+', 'Multiple(2+)'  ) ]
+    PLURALITY       = [ ( 'Single(1)'     , '1' )
+            , ( 'Twins(2)'      , '2' )
+            , ( 'Triplets(3)'   , '3' )
+            , ( 'Quadruplets(4)', '4' )
+            , ( 'Quintuplets(5)', '5' )
+            , ( 'Multiple(2+)'  , '2+') ]
 
     is_male         = forms.CharField( widget = forms.Select( choices = IS_MALE   ) )
     mother_age      = forms.FloatField( min_value= 12 )

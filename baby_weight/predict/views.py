@@ -37,6 +37,7 @@ def predict( request ):
 
             # prepare input data for prediction
             input_data = {
+                        'key'            : 'kid1',
                         'is_male'        : form.cleaned_data[ 'is_male'          ],
                         'mother_age'     : form.cleaned_data[ 'mother_age'       ],
                         'plurality'      : form.cleaned_data[ 'plurality'        ],

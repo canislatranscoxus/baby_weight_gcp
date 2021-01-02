@@ -45,24 +45,23 @@ client_options = ClientOptions(api_endpoint=api_endpoint)
 service = googleapiclient.discovery.build( 'ml', 'v1', client_options=client_options)
 name = 'projects/{}/models/{}'.format(project, model_name)
 
-#model_h5_path = path.join(settings.STATICFILES_DIRS[0], 'predict', 'baby.h5')
-#model_h5_path = 'gs://aat-ai-models/babyweight/20201229152705'
-#h5_model      = load_model( model_h5_path )
 
-def get_weight( j_input ):
+def get_weight( instances ):
     try:
-        tf_dic        = {name: [value] for name, value in j_input.items()}
+        #instances      = {name: [value] for name, value in instances.items()}
 
         #parent        = "projects/{0}/models/{1}/versions/{2}".format(project, model_name, model_version)
-        #predictions   = api.projects().predict( body = tf_dic, name=parent ).execute()
+        #predictions   = api.projects().predict( body = instances, name=parent ).execute()
 
         response = service.projects().predict(
             name=name,
-            #body={'instances': instances}
-            body= tf_dic
+            body={'instances': [ instances ] }
+            #body= tf_dic
         ).execute()
 
-        weight_pounds = response[0][0]
+        # response = {'predictions': [{'babyweight': [-1.84530771], 'key': 'kid1'}]}
+
+        weight_pounds = response[ 'predictions' ] [0] ['babyweight' ][0]
         weight_kilos  = weight_pounds * 0.45359237
 
         result        = {
@@ -76,21 +75,3 @@ def get_weight( j_input ):
         print( 'predict.api_baby.get_weight(), error:  {}'.format( e ) )
         raise
 
-
-'''def get_weight_old( j_input ):
-    try:
-        tf_dic        = {name: tf.convert_to_tensor([value]) for name, value in j_input.items()}
-        predictions   = h5_model.predict( tf_dic )
-        weight_pounds = predictions[0][0]
-        weight_kilos  = weight_pounds * 0.45359237
-
-        result        = {
-                            'weight_pounds' : predictions[0][0],
-                            'weight_kilos'  : weight_pounds * 0.45359237
-                        }
-
-        return result
-
-    except Exception as e:
-        print( 'predict.api_baby.get_weight(), error:  {}'.format( e ) )
-        raise'''
